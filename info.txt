@@ -1,0 +1,4 @@
+Extraer secciones y subsecciones del diario 'Página 12' de Argentina
+
+- Una función para las secciones
+- Una función para cada subsección
