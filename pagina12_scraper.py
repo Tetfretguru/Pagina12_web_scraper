@@ -70,6 +70,12 @@ def main(pagina12):
 
 if __name__ == '__main__':
     url = 'https://www.pagina12.com.ar/'
-    pagina12 = requests.get(url)
 
+    try:
+        pagina12 = requests.get(url)
+    except Exception as request_error:
+        print('ERROR: no such URL.')
+        print(e)
+        print('\n')
+    
     main(pagina12)

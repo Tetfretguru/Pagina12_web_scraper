@@ -6,6 +6,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 import pagina12_scraper as p12
+import getters as g
 
 def  __chosen_link(section_map):
     logger.info('Choose only one of them by typing its index.')
@@ -60,17 +61,26 @@ def sub_main(section_map):
         print(f'{link}:{section_map[link]}')
 
     sub_section = __chosen_link(section_map)
-    ss_section = requests.get(sub_section)
+    try:
+        ss_section = requests.get(sub_section)
+    except:
+        print(p12.request_error)
+
     sub_soup = p12._parsing(url = ss_section)
     
     # See promoted article
     logging.info('See promoted article by entering the link below!')
     promo_article = _get_promo(sub_soup)
-    print(f'Artículo promocional: {promo_article}')
+    print(f'Artículo promocional: {promo_article}' + '\n')
+    obj = g.Article(url = promo_article)
+    print(g._copete, g._title, g._date, g._volanta)
+
     try:
         listed_links = _fetch_articles(sub_soup)
-    except:
+    except Exception as fetch_error:
         print('ERROR while fetching. HINT - overwatch tagging get method.')
+        pass
+
     # Nested links
     logger.info('Showing nested links...')
     for link in listed_links:
