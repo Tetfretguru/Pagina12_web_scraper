@@ -71,9 +71,11 @@ def sub_main(section_map):
     # See promoted article
     logging.info('See promoted article by entering the link below!')
     promo_article = _get_promo(sub_soup)
+    
+    nota = requests.get(promo_article)
     print(f'Artículo promocional: {promo_article}' + '\n')
-    obj = g.Article(url = promo_article)
-    print(g._copete, g._title, g._date, g._volanta)
+    obj = g.Article(url = nota)
+    print('Obj: ' + obj.url + obj._title +'\n')
 
     try:
         listed_links = _fetch_articles(sub_soup)
