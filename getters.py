@@ -8,14 +8,20 @@ class Article:
         self._copete = _get_copete(url)
         self._title = _get_title(url)
         self._date = _get_pub_date(url)
-        #self._volanta = _get_volanta(url)
+        self._volanta = _get_volanta(url)
         self._media_file = _get_media(url)
     
 def __tester(url):
-    nota = requests.get(url)
-    s_nota = BeautifulSoup(nota.text, 'lxml')
-    
-    return s_nota
+    try:
+        nota = requests.get(url)
+        s_nota = BeautifulSoup(nota.text, 'lxml')
+
+        if nota.status_code == 200:
+            return s_nota
+
+    except Excepetion as e:
+        print(e)
+        pass
 
 def _get_title(url):
     s_nota = __tester(url)
@@ -33,10 +39,14 @@ def _get_pub_date(url):
 
 def _get_volanta(url):
     s_nota = __tester(url)
-    # Extraer volanta
-    volanta = s_nota.find('div', attrs = {'class':'article-summary'})
-    return volanta.text
-    
+
+    try:    
+        # Extraer volanta
+        volanta = s_nota.find('div', attrs = {'class':'article-summary'})
+        return volanta.text
+    except:
+        print('Perhaps there is no such a tag in the document.')
+        pass
 
 def _get_copete(url):
     s_nota = __tester(url)
