@@ -8,6 +8,26 @@ logger = logging.getLogger(__name__)
 import pagina12_scraper as p12
 import getters as g
 
+def _nested_links(listed_links):
+    logger.info('Showing nested links...')
+    nest = []
+
+    # Droping duplicated
+    i = 0
+    while i <= len(listed_links):
+        link = listed_links[i]
+        nest.append(link)
+        i += 2
+
+    return nest
+
+def __create_page_dictonary(promo_article):
+        # Crear objeto de Article
+        la_nota = g.Article(url = promo_article)
+        # Crear un page dictionary con nuestro objeto con el método mk_map()
+        page_dictonary = la_nota.mk_map()
+        return page_dictonary
+
 def  __chosen_link(section_map):
     logger.info('Choose only one of them by typing its index.')
     choice = int(input('> '))
@@ -74,9 +94,12 @@ def sub_main(section_map):
     
     
     print(f'Artículo promocional: {promo_article}' + '\n')
-    la_nota = g.Article(url = promo_article)
-    print('Copete:' + '\n' + la_nota._copete + '\n' 'Title:' + '\n' + la_nota._title + '\n' + 'Date:' + '\n' + la_nota._date)
-
+    
+    page_dictonary = __create_page_dictonary(promo_article)
+    logging.info('Use PANDAS to create your dataset after this pager below.')
+    print('\n')
+    print(page_dictonary)
+    print('\n')
     try:
         listed_links = _fetch_articles(sub_soup)
     except Exception as fetch_error:
@@ -84,11 +107,13 @@ def sub_main(section_map):
         pass
 
     # Nested links
-    logger.info('Showing nested links...')
-    for link in listed_links:
-        print(f'Link: {link}')
-    
-    return 'Web scraper has expired session.'
+    nest = input('Doy you want to see nested links? (s/n): ')
+    if nest == 's':
+        clean_nest = _nested_links(listed_links)
+        for link in clean_nest:
+            print(link)
+    else:
+        return 'Web scraper has expired session.'
 
 
     

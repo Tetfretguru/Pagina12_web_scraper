@@ -11,49 +11,58 @@ class Article:
         self._volanta = _get_volanta(url)
         self._media_file = _get_media(url)
     
+    def mk_map(self):
+        page_dict = {
+           'url': self.url,
+           'copete':self._copete, 
+           'title':self._title,
+           'date':self._date,
+           'volanta':self._volanta,
+           'imagen':self._media_file
+        }
+        return page_dict
+    
 def __tester(url):
-    try:
-        nota = requests.get(url)
-        s_nota = BeautifulSoup(nota.text, 'lxml')
-
-        if nota.status_code == 200:
-            return s_nota
-
-    except Excepetion as e:
-        print(e)
-        pass
+    nota = requests.get(url)
+    s_nota = BeautifulSoup(nota.text, 'lxml')
+    
+    return s_nota
 
 def _get_title(url):
     s_nota = __tester(url)
     # Extraer título
     titulo = s_nota.find('h1', attrs = {'class':'article-title'})
-    return titulo.text
-
+    if titulo:
+        return titulo.text
+    else:
+        return None
 
 def _get_pub_date(url):
     s_nota = __tester(url)
     # Extraer fecha
     fecha = s_nota.find('span', attrs = {'pubdate':'pubdate'}).get('datetime')
-    return fecha       
-
+    if fecha:
+        return fecha       
+    else:
+        return None
 
 def _get_volanta(url):
     s_nota = __tester(url)
-
-    try:    
-        # Extraer volanta
-        volanta = s_nota.find('div', attrs = {'class':'article-summary'})
+    # Extraer volanta
+    volanta = s_nota.find('div', attrs = {'class':'article-summary'})
+    if volanta:
         return volanta.text
-    except:
-        print('Perhaps there is no such a tag in the document.')
-        pass
+    else:
+        return None
 
 def _get_copete(url):
     s_nota = __tester(url)
     # Extraer copete
     copete = s_nota.find('h2', attrs = {'class':'article-prefix'})
-    return copete.text
-
+    if copete:
+        return copete.text
+    else:
+        return None
 
 def _get_media(url):
     s_nota = __tester(url)
@@ -66,10 +75,9 @@ def _get_media(url):
     else:
         imagen = imagenes[-1] # Porque estan ordenadas de menor a mayor
         imagen_src = imagen.get('data-src')
-        print(f' Img URL: {imagen_src}')
+        #print(f'Img URL: {imagen_src}')
 
     img_req = requests.get(imagen_src)
     if img_req.status_code == 200:
         img = Image(img_req.content)
-        return img
-
+        return imagen_src
