@@ -2,3 +2,6 @@ Extraer secciones y subsecciones del diario 'Página 12' de Argentina
 
 - Una función para las secciones
 - Una función para cada subsección
+
+Reto:
+Utilizar la recursividad para poder automatizar los demás scrapings de cada uno de los links anidados.
