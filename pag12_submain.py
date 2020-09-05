@@ -7,23 +7,12 @@ logger = logging.getLogger(__name__)
 
 import pagina12_scraper as p12
 import getters as g
+import datasetter as ds
 
-def _nested_links(listed_links):
-    logger.info('Showing nested links...')
-    nest = []
 
-    # Droping duplicated
-    i = 0
-    while i <= len(listed_links):
-        link = listed_links[i]
-        nest.append(link)
-        i += 2
-
-    return nest
-
-def __create_page_dictonary(promo_article):
+def __create_page_dictonary(url):
         # Crear objeto de Article
-        la_nota = g.Article(url = promo_article)
+        la_nota = g.Article(url)
         # Crear un page dictionary con nuestro objeto con el método mk_map()
         page_dictonary = la_nota.mk_map()
         return page_dictonary
@@ -95,10 +84,12 @@ def sub_main(section_map):
     
     print(f'Artículo promocional: {promo_article}' + '\n')
     
-    page_dictonary = __create_page_dictonary(promo_article)
+    data = [] # Para posteriormente crear dataframe
+    first_page_dictonary = __create_page_dictonary(url = promo_article)
     logging.info('Use PANDAS to create your dataset after this pager below.')
     print('\n')
-    print(page_dictonary)
+    print(first_page_dictonary)
+    data.append(first_page_dictonary)
     print('\n')
     try:
         listed_links = _fetch_articles(sub_soup)
@@ -109,9 +100,19 @@ def sub_main(section_map):
     # Nested links
     nest = input('Doy you want to see nested links? (s/n): ')
     if nest == 's':
-        clean_nest = _nested_links(listed_links)
-        for link in clean_nest:
-            print(link)
+        link_id = 0
+        while link_id < len(listed_links):
+            print(listed_links[link_id])
+            if listed_links[link_id] != None:        
+                logger.info(f'Transforming {listed_links[link_id]}')
+                print('\n')
+                page_dictonary = __create_page_dictonary(url = listed_links[link_id])
+                data.append(page_dictonary)
+            link_id += 1
+
+        print(f'{len(data)} añadidos.')
+
+        return ds.create_csv(muestra = data)
     else:
         return 'Web scraper has expired session.'
 
